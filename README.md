@@ -49,46 +49,55 @@ Evaluate the model with the testing data.
 ## PROGRAM
 
 ```py
-## Kavinraja D
 # 212222240047
+# Kavinraja D(AIML)
+from google.colab import auth
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
+import gspread
+import pandas as pd
+from google.auth import default
 import pandas as pd
 
-from sklearn.model_selection import train_test_split
+auth.authenticate_user()
+creds, _ = default()
+gc = gspread.authorize(creds)
+worksheet = gc.open('Data').sheet1
 
-from sklearn.preprocessing import MinMaxScaler
-
-df=pd.read_csv("Data.csv")
-
+rows = worksheet.get_all_values()
+df = pd.DataFrame(rows[1:], columns=rows[0])
 df.head()
+df=df.astype({'Input':'float'})
+df=df.astype({'Output':'float'})
+X=df[['Input']].values
+Y=df[['Output']].values
 
-x=df[["Input"]].values
 
-y=df[["Output"]].values
+x_train,x_test,y_train,y_test=train_test_split(X,Y,test_size=0.33,random_state=50)
+scaler=MinMaxScaler()
+scaler.fit(x_train)
+x_t_scaled = scaler.transform(x_train)
+x_t_scaled
 
-x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=42)
+ai_brain = Sequential([
+    Dense(3,activation='relu'),
+    Dense(4,activation='relu'),
+    Dense(1)
+])
+ai_brain.compile(optimizer='rmsprop',loss='mse')
+ai_brain.fit(x=x_t_scaled,y=y_train,epochs=50)
 
-import tensorflow as tf
+loss_df = pd.DataFrame(ai_brain.history.history)
+loss_df.plot()
 
-model=tf.keras.Sequential([tf.keras.layers.Dense(8,activation='relu'),
-                           tf.keras.layers.Dense(16,activation='relu'),
-                           tf.keras.layers.Dense(1)])
-model.compile(loss="mae",optimizer="adam",metrics=["mse"])
-
-history=model.fit(x_train,y_train,epochs=10)
-
-import numpy as np
-
-x_test
-
-preds=model.predict(x_test)
-np.round(preds)
-
-tf.round(model.predict([[20]]))
-
-pd.DataFrame(history.history).plot()
-
-r=tf.keras.metrics.RootMeanSquaredError()
-r(y_test,preds)
+scal_x_test=scaler.transform(x_test)
+ai_brain.evaluate(scal_x_test,y_test)
+input=[[120]]
+inp_scale=scaler.transform(input)
+inp_scale.shape
+ai_brain.predict(inp_scale)
 
 ```
 
