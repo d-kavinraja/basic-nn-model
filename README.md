@@ -118,20 +118,19 @@ ai_brain.predict(inp_scale)
 
 ## Dataset Information
 
-![OUTPUT](./images/input.png)
+![output](./images/input.png)
 
 ## OUTPUT
 
 ## Training Loss Vs Iteration Plot
-
-![OUTPUT](./images/o2.png)
+![output](./images/o2.png)
 ## Test Data Root Mean Squared Error
 
-![OUTPUT](./images/o1.png)
+![output](./images/o1.png)
 
 ## New Sample Data Prediction
 
-![OUTPUT](./images/o3.png)
+![output](./images/o3.png)
 
 ## RESULT
 Thus a Neural network for Regression model is Implemented
